@@ -3,6 +3,7 @@
 set -e
 
 function build_prep() {
+	cd $BUILDDIR
 	echo
 	echo "--- BUILDING: $1 ---"
 	echo
@@ -13,6 +14,7 @@ function build_prep() {
 	fi
 	cd $2
 	git fetch
+	git reset --hard HEAD
 		
 	APP="$OUTDIR/$1.app"
 }
@@ -83,6 +85,7 @@ if [ "$BUILD_QUAKE2" = true ] ; then
 		echo "Attaching Vulkan SDK..."
 		hdiutil attach -mountpoint "/Volumes/VulkanSDK" vulkan_sdk.dmg
 		echo "Copying Vulkan SDK files..."
+		rm -rf vulkansdk
 		mkdir vulkansdk
 		cp -r /Volumes/VulkanSDK/* vulkansdk
 		echo "Detaching Vulkan SDK..."
@@ -102,17 +105,17 @@ if [ "$BUILD_QUAKE2" = true ] ; then
 	cd vkQuake2
 	
 	echo "Creating Quake II.app"
-	mkdir -p "$APP/Contents/MacOS/vulkansdk/macOS/{lib,share/vulkan},Resources}"
+	mkdir -p "$APP"/Contents/{MacOS/vulkansdk/macOS/{lib,share/vulkan},Resources}
 	cp "$CODEDIR/sources/Quake2Info.plist" "$APP/Contents/Info.plist"
 	cp "$CODEDIR/sources/Quake2Icon.icns" "$APP/Contents/Resources/AppIcon.icns"
 	cp "$CODEDIR/sources/quake2_start.sh" "$APP/Contents/MacOS/quake2_start.sh"
-	cp "quake2" "ref_vl.dylib" "baseq2/game.dylib" "$APP/Contents/MacOS"
+	cp "quake2" "ref_vk.dylib" "baseq2/game.dylib" "$APP/Contents/MacOS"
 	cp "$VULKAN_SDK/LICENSE.txt" "$APP/Contents/MacOS/vulkansdk/LICENSE.txt"
 	cp "$VULKAN_SDK/macOS/lib/libMoltenVK.dylib" "$APP/Contents/MacOS/vulkansdk/macOS/lib/libMoltenVK.dylib"
 	cp "$VULKAN_SDK/macOS/lib/libVkLayer_khronos_validation.dylib" "$APP/Contents/MacOS/vulkansdk/macOS/lib/libVkLayer_khronos_validation.dylib"
 	cp "$VULKAN_SDK/macOS/lib/libVkLayer_api_dump.dylib" "$APP/Contents/MacOS/vulkansdk/macOS/lib/libVkLayer_api_dump.dylib"
-	cp "$VULKAN_SDK/macOS/share/vulkan/explicit_layer.d" "$APP/Contents/MacOS/vulkansdk/macOS/share/vulkan/explicit_layer.d"
-	cp "$VULKAN_SDK/macOS/share/vulkan/icd.d" "$APP/Contents/MacOS/vulkansdk/macOS/share/vulkan/icd.d"
+	cp -r "$VULKAN_SDK/macOS/share/vulkan/explicit_layer.d" "$APP/Contents/MacOS/vulkansdk/macOS/share/vulkan/explicit_layer.d"
+	cp -r "$VULKAN_SDK/macOS/share/vulkan/icd.d" "$APP/Contents/MacOS/vulkansdk/macOS/share/vulkan/icd.d"
 	chmod +x "$APP"
 	
 	echo "Done building Quake II!"
@@ -121,13 +124,12 @@ fi
 
 if [ "$BUILD_QUAKE3" = true ] ; then
 	build_prep "Quake III Arena" ioq3 https://github.com/ioquake/ioq3
-	use_latest_tag 
 	
 	echo "Compiling..."
 	./make-macosx.sh x86_64
 	
 	echo "Moving app..."
-	cp -r build/release-darwin/x86_64/ioquake3.app "$APP"
+	cp -r build/release-darwin-x86_64/ioquake3.app "$APP"
 	
 	echo "Done building Quake III Arena!"
 fi
