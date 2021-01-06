@@ -3,7 +3,19 @@
 This is an environment for compiling and packaging modern ports of Quake I, Quake II, and Quake III Arena
 as self-contained macOS apps.
 
-## Using
+## Using the Apps
+
+All you need to do to use the apps built here is copy certain files from a retail copy of the appropriate game into a particular folder on your machine:
+
+ - For **Quake I**, copy `PAK0.PAK` and `PAK1.PAK` from the `id1` retail folder into `~/Library/Application Support/Quake/id1`.
+ - For **Quake II**, copy `pak0.pak`, `pak1.pak`, and `pak2.pak` from the `baseq2` retail folder into `~/Library/Application Support/Quake II/baseq2`.
+ - For **Quake III**, copy the files `pak0.pk3` through `pak8.pk3` from the `baseq3` retail folder into `~/Library/Application Support/Quake3/baseq3`.
+
+Place the app in your Applications folder and you're now good to go!
+
+
+
+## Building
 
 Invoke `qbuild.sh` from the base directory of this repository to begin compiling. Temporary build files will reside in a `build` directory, and the resulting `.app`s will end up in `out`.
 
