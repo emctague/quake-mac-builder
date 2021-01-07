@@ -1,7 +1,7 @@
 # quake-mac-builder
 
 This is an environment for compiling and packaging modern ports of Quake I, Quake II, and Quake III Arena
-as self-contained macOS apps.
+as self-contained macOS apps.		
 
 ## Using the Apps
 
