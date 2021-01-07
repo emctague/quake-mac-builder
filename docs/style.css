@@ -1,0 +1,121 @@
+* { box-sizing: border-box; }
+
+body {
+	background-color: #F6F6F6;
+	color: #444444;
+	margin: 0;
+	font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+}
+
+header {
+	text-align: center;
+	padding: 3em;
+}
+
+section.panels {
+	display: flex;
+	flex-wrap: wrap;
+	justify-content: center;
+	align-items: center;
+}
+
+article.panel {
+	background: #fff;
+	width: 400px;
+	height: 230px;
+	margin: 1.5em;
+	border-radius: 1em;
+	box-shadow: 0 2px 4px rgba(0,0,0,0.15);
+	padding: 1.75em;
+}
+
+.icon-row {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	margin-bottom: 1.5em;
+}
+
+.icon-row img.app-icon {
+	box-shadow: 0 2px 4px rgba(0,0,0,0.15);
+	border-radius: 27px;
+	width: 5.5vw;
+	height: 5.5vw;
+	margin-right: 1.5em;
+}
+
+.icon-row img.dl-icon {
+	width: 25px;
+	height: 25px;
+	margin-right: .5em;
+}
+
+.icon-col {
+	flex-direction: column;
+	justify-content: center;
+	display: flex;
+	flex: 1;
+}
+
+.icon-col .app-name {
+	font-size: 1.3em;
+	margin-bottom: .25em;
+	font-weight: 500;
+}
+
+.icon-col .app-meta {
+	font-size: .9em;
+	font-weight: 200;
+}
+
+.table-row {
+	display: flex;
+}
+
+.table-header, .table-value {
+	flex: 1;
+	padding: 0.25em;
+	font-weight: 300;
+}
+
+.table-header {
+	flex: 0.65;
+	font-weight: 500;
+	text-align: right;
+}
+
+footer {
+	box-shadow: inset 0 7px 9px -7px rgba(0,0,0,0.4);
+	background-color: #EAEAEA;
+	padding: 3em;
+	color: #696969;
+	font-weight: 300;
+	margin-top: 2em;
+}
+
+footer p {
+	max-width: 600px;
+	margin: 0 auto;
+	padding: .5em;
+	line-height: 1.5;
+}
+
+footer p.copyright {
+	font-weight: 400;
+}
+
+h1 {
+	font-weight: normal;
+	font-size: 40pt;
+	padding-bottom: .3em;
+}
+
+h2 {
+	font-weight: 200;
+	font-size: 20pt;
+}
+
+a {
+	text-decoration: none;
+	color: #004CFF;
+}
