@@ -62,7 +62,7 @@ if [ "$BUILD_QUAKE1" = true ] ; then
 	cd MacOSX
 	
 	echo "Compiling..."
-	xcodebuild -project QuakeSpasm.xcodeproj -target QuakeSpasm -configuration Release MACOSX_DEPLOYMENT_TARGET=11.1.99 ARCHS=x86_64 CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO -sdk macosx
+	xcodebuild -project QuakeSpasm.xcodeproj -target QuakeSpasm -configuration Release MACOSX_DEPLOYMENT_TARGET=10.15.0 ARCHS=x86_64 CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO -sdk macosx
 
 	echo "Copying to Quake.app..."
 	cp -r build/Release/QuakeSpasm.app "$APP"
