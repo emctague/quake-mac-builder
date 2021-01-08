@@ -66,7 +66,7 @@ OUTDIR="$PWD"
 cd ../build
 BUILDDIR="$PWD"
 
-export CODESIGN_ALLOCATE="/Applications/Xcode.app/Contents/Developer/usr/bin/codesign_allocate"
+#export CODESIGN_ALLOCATE="/Applications/Xcode.app/Contents/Developer/usr/bin/codesign_allocate"
 
 
 if [ "$BUILD_QUAKE1" = true ] ; then
