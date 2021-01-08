@@ -16,7 +16,7 @@ function build_prep() {
 	git fetch
 	git reset --hard HEAD
 		
-	APP="$OUTDIR/$1.app"
+	APP="$OUTDIR/$4/$1.app"
 }
 
 function use_latest_tag() {
@@ -30,6 +30,8 @@ BUILD_QUAKE2="${BUILD_QUAKE2:-true}"
 BUILD_QUAKE3="${BUILD_QUAKE3:-true}"
 CLEAN_ALL="${CLEAN_ALL:-false}"
 OBTAIN_VULKAN="${OBTAIN_VULKAN:-true}"
+DO_CODESIGN="${DO_CODESIGN:-false}"
+CODESIGN_DEVELOPER="Apple Development: ethan@tague.me (SKUN5354JM)"
 
 echo "-- emctague/quake-mac-builder --"
 echo
@@ -38,6 +40,7 @@ echo "Will build Quake II        / vkQuake2   (BUILD_QUAKE2):  ${BUILD_QUAKE2}"
 echo "Will build Quake III Arena / ioquake3   (BUILD_QUAKE3):  ${BUILD_QUAKE3}"
 echo "Will clean build folder                 (CLEAN_ALL):     ${CLEAN_ALL}"
 echo "Will obtain own Vulkan SDK              (OBTAIN_VULKAN): ${OBTAIN_VULKAN}"
+echo "Will try to sign App                    (DO_CODESIGN):   ${DO_CODESIGN}"
 
 
 if [  "$CLEAN_ALL" = true ] ; then
@@ -47,7 +50,14 @@ if [  "$CLEAN_ALL" = true ] ; then
 fi
 
 rm -rf out
-mkdir -p out build
+mkdir -p build out/quake out/quake2 out/quake3
+
+
+if [  "$DO_CODESIGN" = true ] ; then
+	echo "$P12_BASE64" | base64 --decode > Certificates.p12
+	security create-keychain -p "$P12_PASSWORD" MyKeychain
+	security import Certificates.p12 -P "$P12_PASSWORD" -k MyKeychain -T /usr/bin/codesign
+fi
 
 CODEDIR="$PWD"
 cd out
@@ -55,9 +65,11 @@ OUTDIR="$PWD"
 cd ../build
 BUILDDIR="$PWD"
 
+export CODESIGN_ALLOCATE="/Applications/Xcode.app/Contents/Developer/usr/bin/codesign_allocate"
+
 
 if [ "$BUILD_QUAKE1" = true ] ; then
-	build_prep "Quake I" quakespasm https://github.com/sezero/quakespasm.git 
+	build_prep "Quake I" quakespasm https://github.com/sezero/quakespasm.git quake
 	use_latest_tag 
 	cd MacOSX
 	
@@ -72,11 +84,19 @@ if [ "$BUILD_QUAKE1" = true ] ; then
 	cp "$CODEDIR/sources/quake_start.sh" "$APP/Contents/MacOS/quake_start.sh"
 	plutil -replace CFBundleExecutable -string quake_start.sh "$APP/Contents/Info.plist"
 	
+	if [ "$DO_CODESIGN" = true ] ; then
+		codesign --force --deep -s "$CODESIGN_DEVELOPER" $APP
+	fi
+	
+	hdiutil create $OUTDIR/Quake-tmp.dmg -ov -volname "Quake" -fs HFS+ -srcfolder "$OUTDIR/quake" 
+	hdiutil convert $OUTDIR/Quake-tmp.dmg -format UDZO -o $OUTDIR/Quake.dmg
+	rm -rf $OUTDIR/Quake-tmp.dmg
+	
 	echo "Done building Quake I!"
 fi
 
 if [ "$BUILD_QUAKE2" = true ] ; then
-	build_prep "Quake II" vkQuake2 https://github.com/kondrak/vkQuake2
+	build_prep "Quake II" vkQuake2 https://github.com/kondrak/vkQuake2 quake2
 	use_latest_tag 
 	
 	if [ "$OBTAIN_VULKAN" = true ] ; then
@@ -117,19 +137,37 @@ if [ "$BUILD_QUAKE2" = true ] ; then
 	cp -r "$VULKAN_SDK/macOS/share/vulkan/explicit_layer.d" "$APP/Contents/MacOS/vulkansdk/macOS/share/vulkan/explicit_layer.d"
 	cp -r "$VULKAN_SDK/macOS/share/vulkan/icd.d" "$APP/Contents/MacOS/vulkansdk/macOS/share/vulkan/icd.d"
 	chmod +x "$APP"
+	chmod +x "$APP/Contents/MacOS/quake2"
+	chmod +x "$APP/Contents/MacOS/quake2_start.sh"
+	
+	if [  "$DO_CODESIGN" = true ] ; then
+		codesign --force --deep -s "$CODESIGN_DEVELOPER" $APP
+	fi
+	
+	hdiutil create $OUTDIR/Quake2-tmp.dmg -ov -volname "QuakeII" -fs HFS+ -srcfolder "$OUTDIR/quake2" 
+	hdiutil convert $OUTDIR/Quake2-tmp.dmg -format UDZO -o $OUTDIR/Quake2.dmg
+	rm -rf $OUTDIR/Quake2-tmp.dmg
 	
 	echo "Done building Quake II!"
 fi
 
 
 if [ "$BUILD_QUAKE3" = true ] ; then
-	build_prep "Quake III Arena" ioq3 https://github.com/ioquake/ioq3
+	build_prep "Quake III Arena" ioq3 https://github.com/ioquake/ioq3 quake3
 	
 	echo "Compiling..."
 	./make-macosx.sh x86_64
 	
 	echo "Moving app..."
 	cp -r build/release-darwin-x86_64/ioquake3.app "$APP"
+	
+	if [  "$DO_CODESIGN" = true ] ; then
+		codesign --force --deep -s "$CODESIGN_DEVELOPER" $APP
+	fi
+	
+	hdiutil create $OUTDIR/Quake3-tmp.dmg -ov -volname "QuakeIIIArena" -fs HFS+ -srcfolder "$OUTDIR/quake3" 
+	hdiutil convert $OUTDIR/Quake3-tmp.dmg -format UDZO -o $OUTDIR/Quake3.dmg
+	rm -rf $OUTDIR/Quake3-tmp.dmg
 	
 	echo "Done building Quake III Arena!"
 fi
