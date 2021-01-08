@@ -95,7 +95,13 @@ if [ "$BUILD_QUAKE1" = true ] ; then
 	if [ "$DO_CODESIGN" = true ] ; then
 		codesign --deep --force -s "$CODESIGN_DEVELOPER" "$APP/Contents/Frameworks/SDL.framework/Versions/Current"
 		codesign --deep --force -s "$CODESIGN_DEVELOPER" "$APP/Contents/MacOS/libvorbisfile.dylib"
+		codesign --deep --force -s "$CODESIGN_DEVELOPER" "$APP/Contents/MacOS/libvorbis.dylib"
 		codesign --deep --force -s "$CODESIGN_DEVELOPER" "$APP/Contents/MacOS/libopusfile.dylib"
+		codesign --deep --force -s "$CODESIGN_DEVELOPER" "$APP/Contents/MacOS/libopus.dylib"
+		codesign --deep --force -s "$CODESIGN_DEVELOPER" "$APP/Contents/MacOS/libogg.dylib"
+		codesign --deep --force -s "$CODESIGN_DEVELOPER" "$APP/Contents/MacOS/libmikmod.dylib"
+		codesign --deep --force -s "$CODESIGN_DEVELOPER" "$APP/Contents/MacOS/libmad.dylib"
+		codesign --deep --force -s "$CODESIGN_DEVELOPER" "$APP/Contents/MacOS/libFLAC.dylib"
 		codesign --deep --force -s "$CODESIGN_DEVELOPER" "$APP/Contents/MacOS/QuakeSpasm"
 		codesign --force -s "$CODESIGN_DEVELOPER" "$APP"
 	fi
