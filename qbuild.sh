@@ -56,6 +56,7 @@ mkdir -p build out/quake out/quake2 out/quake3
 if [  "$DO_CODESIGN" = true ] ; then
 	echo "$P12_BASE64" | base64 --decode > Certificates.p12
 	security create-keychain -p "$P12_PASSWORD" MyKeychain
+	security unlock-keychain -p "$P12_PASSWORD" MyKeychain
 	security import Certificates.p12 -P "$P12_PASSWORD" -k MyKeychain -T /usr/bin/codesign
 fi
 
