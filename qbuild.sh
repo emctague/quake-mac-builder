@@ -94,6 +94,7 @@ if [ "$BUILD_QUAKE1" = true ] ; then
 	
 	if [ "$DO_CODESIGN" = true ] ; then
 		codesign --deep --force -s "$CODESIGN_DEVELOPER" "$APP/Contents/Frameworks/SDL.framework/Versions/Current"
+		codesign --deep --force -s "$CODESIGN_DEVELOPER" "$APP/Contents/MacOS/libvorbisfile.dylib"
 		codesign --force -s "$CODESIGN_DEVELOPER" "$APP"
 	fi
 	
