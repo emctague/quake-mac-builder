@@ -93,8 +93,8 @@ if [ "$BUILD_QUAKE1" = true ] ; then
 	cp "$CODEDIR/sources/quake_sdlInfo.plist" "$APP/Contents/Frameworks/SDL.framework/Resources/Info.plist"
 	
 	if [ "$DO_CODESIGN" = true ] ; then
-		codesign --deep -s "$CODESIGN_DEVELOPER" "$APP/Contents/Frameworks/SDL.framework/Versions/Current"
-		codesign --deep -s "$CODESIGN_DEVELOPER" "$APP"
+		codesign --deep --force -s "$CODESIGN_DEVELOPER" "$APP/Contents/Frameworks/SDL.framework/Versions/Current"
+		codesign --deep --force -s "$CODESIGN_DEVELOPER" "$APP"
 	fi
 	
 	hdiutil create $OUTDIR/Quake-tmp.dmg -ov -volname "Quake" -fs HFS+ -srcfolder "$OUTDIR/quake" 
