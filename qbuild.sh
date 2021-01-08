@@ -89,7 +89,7 @@ if [ "$BUILD_QUAKE1" = true ] ; then
 	plutil -replace CFBundleExecutable -string quake_start.sh "$APP/Contents/Info.plist"
 	
 	if [ "$DO_CODESIGN" = true ] ; then
-		codesign --force --deep -s "$CODESIGN_DEVELOPER" "$APP"
+		codesign --force -s "$CODESIGN_DEVELOPER" "$APP"
 	fi
 	
 	hdiutil create $OUTDIR/Quake-tmp.dmg -ov -volname "Quake" -fs HFS+ -srcfolder "$OUTDIR/quake" 
@@ -145,7 +145,7 @@ if [ "$BUILD_QUAKE2" = true ] ; then
 	chmod +x "$APP/Contents/MacOS/quake2_start.sh"
 	
 	if [  "$DO_CODESIGN" = true ] ; then
-		codesign --force --deep -s "$CODESIGN_DEVELOPER" "$APP"
+		codesign --force -s "$CODESIGN_DEVELOPER" "$APP"
 	fi
 	
 	hdiutil create $OUTDIR/Quake2-tmp.dmg -ov -volname "QuakeII" -fs HFS+ -srcfolder "$OUTDIR/quake2" 
@@ -166,7 +166,7 @@ if [ "$BUILD_QUAKE3" = true ] ; then
 	cp -r build/release-darwin-x86_64/ioquake3.app "$APP"
 	
 	if [  "$DO_CODESIGN" = true ] ; then
-		codesign --force --deep -s "$CODESIGN_DEVELOPER" "$APP"
+		codesign --force -s "$CODESIGN_DEVELOPER" "$APP"
 	fi
 	
 	hdiutil create $OUTDIR/Quake3-tmp.dmg -ov -volname "QuakeIIIArena" -fs HFS+ -srcfolder "$OUTDIR/quake3" 
