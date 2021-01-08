@@ -89,7 +89,7 @@ if [ "$BUILD_QUAKE1" = true ] ; then
 	plutil -replace CFBundleExecutable -string quake_start.sh "$APP/Contents/Info.plist"
 	
 	if [ "$DO_CODESIGN" = true ] ; then
-		codesign -s "$CODESIGN_DEVELOPER" "$APP"
+		codesign --deep -s "$CODESIGN_DEVELOPER" "$APP"
 	fi
 	
 	hdiutil create $OUTDIR/Quake-tmp.dmg -ov -volname "Quake" -fs HFS+ -srcfolder "$OUTDIR/quake" 
