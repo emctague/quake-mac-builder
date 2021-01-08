@@ -94,7 +94,8 @@ if [ "$BUILD_QUAKE1" = true ] ; then
 	
 	if [ "$DO_CODESIGN" = true ] ; then
 		codesign --deep --force -s "$CODESIGN_DEVELOPER" "$APP/Contents/Frameworks/SDL.framework/Versions/Current"
-		codesign --deep --force -s "$CODESIGN_DEVELOPER" "$APP"
+		codesign --deep --force -s "$CODESIGN_DEVELOPER" "$APP/Contents/MacOS/ref_vk.dylib"
+		codesign --force -s "$CODESIGN_DEVELOPER" "$APP"
 	fi
 	
 	hdiutil create $OUTDIR/Quake-tmp.dmg -ov -volname "Quake" -fs HFS+ -srcfolder "$OUTDIR/quake" 
