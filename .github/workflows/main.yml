@@ -37,6 +37,51 @@ jobs:
           P12_BASE64: ${{ secrets.CERTIFICATES_P12 }}
           P12_PASSWORD: ${{ secrets.CERTIFICATES_P12_PASSWORD }}
           DO_CODESIGN: false
+          
+      - name: Create Release
+            id: create_release
+            uses: actions/create-release@v1
+            env:
+              GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # This token is provided by Actions, you do not need to create your own token
+            with:
+              tag_name: ${{ github.ref }}
+              release_name: Release ${{ github.ref }}
+              body: |
+                This is a new release of quake-mac-builder.
+              draft: false
+              prerelease: false
+      - name: Upload Quake 1 DMG
+              id: upload-release-asset-q1 
+              uses: actions/upload-release-asset@v1
+              env:
+                GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+              with:
+                upload_url: ${{ steps.create_release.outputs.upload_url }} # This pulls from the CREATE RELEASE step above, referencing it's ID to get its outputs object, which include a `upload_url`. See this blog post for more info: https://jasonet.co/posts/new-features-of-github-actions/#passing-data-to-future-steps 
+                asset_path: ./out/Quake.dmg
+                asset_name: Quake.dmg
+                asset_content_type: application/octet-stream
+                
+      - name: Upload Quake 2 DMG
+              id: upload-release-asset-q2 
+              uses: actions/upload-release-asset@v1
+              env:
+                GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+              with:
+                upload_url: ${{ steps.create_release.outputs.upload_url }} # This pulls from the CREATE RELEASE step above, referencing it's ID to get its outputs object, which include a `upload_url`. See this blog post for more info: https://jasonet.co/posts/new-features-of-github-actions/#passing-data-to-future-steps 
+                asset_path: ./out/Quake2.dmg
+                asset_name: QuakeII.dmg
+                asset_content_type: application/octet-stream
+                
+      - name: Upload Quake 3 DMG
+              id: upload-release-asset-q3
+              uses: actions/upload-release-asset@v1
+              env:
+                GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+              with:
+                upload_url: ${{ steps.create_release.outputs.upload_url }} # This pulls from the CREATE RELEASE step above, referencing it's ID to get its outputs object, which include a `upload_url`. See this blog post for more info: https://jasonet.co/posts/new-features-of-github-actions/#passing-data-to-future-steps 
+                asset_path: ./out/Quake3.dmg
+                asset_name: QuakeIIIARena.dmg
+                asset_content_type: application/octet-stream
       
       - uses: actions/upload-artifact@v2
         with:
