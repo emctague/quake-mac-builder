@@ -9,7 +9,7 @@ mkdir -p "$HOME/Library/Application Support/Quake II/baseq2"
 cd "$HOME/Library/Application Support/Quake II"
 
 if [ ! -f "baseq2/pak0.pak" ]; then
-	osascript -e 'tell app "System Events" to display dialog "To play Quake 2, copy all .pak files from your official Quake II disk'\''s baseq2 folder into this app'\''s baseq2 folder" buttons {"Open baseq2 Folder"} default button 1'
+	osascript -e 'display dialog "To play Quake 2, copy all .pak files from your official Quake II disk'\''s baseq2 folder into this app'\''s baseq2 folder" buttons {"Open baseq2 Folder"} default button 1 with title "Quake II"'
 	open -a Finder ./baseq2
 	exit
 fi

@@ -8,7 +8,7 @@ cd "$HOME/Library/ApplicationSupport/Quake"
 
 
 if [ ! -f "id1/PAK0.PAK" ]; then
-	osascript -e 'tell app "System Events" to display dialog "To play Quake, copy all .PAK files from your official Quake disk'\''s id1 folder into this app'\''s id1 folder" buttons {"Open id1 Folder"} default button 1'
+	osascript -e 'display dialog "To play Quake, copy all .PAK files from your official Quake disk'\''s id1 folder into this app'\''s id1 folder" buttons {"Open id1 Folder"} default button 1 with title "Quake"'
 	open -a Finder ./id1
 	exit
 fi
