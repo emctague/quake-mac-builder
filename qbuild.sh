@@ -31,16 +31,19 @@ BUILD_QUAKE3="${BUILD_QUAKE3:-true}"
 CLEAN_ALL="${CLEAN_ALL:-false}"
 OBTAIN_VULKAN="${OBTAIN_VULKAN:-true}"
 DO_CODESIGN="${DO_CODESIGN:-false}"
-CODESIGN_DEVELOPER="Apple Development: ethan@tague.me (SKUN5354JM)"
+IMPORT_CERT="${IMPORT_CERT:-false}"
+CODESIGN_DEVELOPER="${CODESIGN_DEVELOPER:-Apple Development: ethan@tague.me (SKUN5354JM)}"
 
 echo "-- emctague/quake-mac-builder --"
 echo
-echo "Will build Quake I         / QuakeSpasm (BUILD_QUAKE1):  ${BUILD_QUAKE1}"
-echo "Will build Quake II        / vkQuake2   (BUILD_QUAKE2):  ${BUILD_QUAKE2}"
-echo "Will build Quake III Arena / ioquake3   (BUILD_QUAKE3):  ${BUILD_QUAKE3}"
-echo "Will clean build folder                 (CLEAN_ALL):     ${CLEAN_ALL}"
-echo "Will obtain own Vulkan SDK              (OBTAIN_VULKAN): ${OBTAIN_VULKAN}"
-echo "Will try to sign App                    (DO_CODESIGN):   ${DO_CODESIGN}"
+echo "Will build Quake I         / QuakeSpasm (BUILD_QUAKE1):       ${BUILD_QUAKE1}"
+echo "Will build Quake II        / vkQuake2   (BUILD_QUAKE2):       ${BUILD_QUAKE2}"
+echo "Will build Quake III Arena / ioquake3   (BUILD_QUAKE3):       ${BUILD_QUAKE3}"
+echo "Will clean build folder                 (CLEAN_ALL):          ${CLEAN_ALL}"
+echo "Will obtain own Vulkan SDK              (OBTAIN_VULKAN):      ${OBTAIN_VULKAN}"
+echo "Will try to sign App                    (DO_CODESIGN):        ${DO_CODESIGN}"
+echo "Will try to import cert                 (IMPORT_CERT):        ${IMPORT_CERT}"
+echo "CodeSign Certificate                    (CODESIGN_DEVELOPER): ${CODESIGN_DEVELOPER}"
 
 
 if [  "$CLEAN_ALL" = true ] ; then
@@ -53,7 +56,7 @@ rm -rf out
 mkdir -p build out/quake out/quake2 out/quake3
 
 
-if [  "$DO_CODESIGN" = true ] ; then
+if [  "$IMPORT_CERT" = true ] ; then
 	echo "$P12_BASE64" | base64 --decode > Certificates.p12
 	security create-keychain -p "$P12_PASSWORD" MyKeychain
 	security default-keychain -s MyKeychain
@@ -78,7 +81,26 @@ if [ "$BUILD_QUAKE1" = true ] ; then
 	cd MacOSX
 	
 	echo "Compiling..."
-	xcodebuild -project QuakeSpasm.xcodeproj -target QuakeSpasm -configuration Release MACOSX_DEPLOYMENT_TARGET=10.15.0 ARCHS=x86_64 CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO -sdk macosx
+	
+	if [  "$DO_CODESIGN" = false ] ; then
+		CSIDENTITY=""
+		CSREQUIRED=NO
+	else
+		CSIDENTITY="${CODESIGN_DEVELOPER}"
+		CSREQUIRED=YES
+	fi
+	
+	if [  "$DO_CODESIGN" = true ] ; then
+		
+		rm -f SDL.framework/.DS_Store SDL.framework/License.rtf SDL.framework/ReadMe.txt SDL.framework/UniversalBinaryNotes.rtf
+		
+		codesign --deep -f -s "$CODESIGN_DEVELOPER" SDL.framework
+		codesign --deep -f -s "$CODESIGN_DEVELOPER" SDL2.framework
+		codesign -f -s "$CODESIGN_DEVELOPER" codecs/lib/*
+		
+	fi
+	
+	xcodebuild -project QuakeSpasm.xcodeproj -target QuakeSpasm -configuration Release MACOSX_DEPLOYMENT_TARGET=10.15.0 ARCHS=x86_64 -sdk macosx CODE_SIGN_IDENTITY="$CSIDENTITY" CODE_SIGNING_REQUIRED=$CSREQUIRED
 
 	echo "Copying to Quake.app..."
 	cp -r build/Release/QuakeSpasm.app "$APP"
@@ -92,19 +114,25 @@ if [ "$BUILD_QUAKE1" = true ] ; then
 	rm "$APP/Contents/Frameworks/SDL.framework/Resources/Info.plist"
 	cp "$CODEDIR/sources/quake_sdlInfo.plist" "$APP/Contents/Frameworks/SDL.framework/Resources/Info.plist"
 	
-	if [ "$DO_CODESIGN" = true ] ; then
-		codesign --deep --force -s "$CODESIGN_DEVELOPER" "$APP/Contents/Frameworks/SDL.framework/Versions/Current"
-		codesign --deep --force -s "$CODESIGN_DEVELOPER" "$APP/Contents/MacOS/libvorbisfile.dylib"
-		codesign --deep --force -s "$CODESIGN_DEVELOPER" "$APP/Contents/MacOS/libvorbis.dylib"
-		codesign --deep --force -s "$CODESIGN_DEVELOPER" "$APP/Contents/MacOS/libopusfile.dylib"
-		codesign --deep --force -s "$CODESIGN_DEVELOPER" "$APP/Contents/MacOS/libopus.dylib"
-		codesign --deep --force -s "$CODESIGN_DEVELOPER" "$APP/Contents/MacOS/libogg.dylib"
-		codesign --deep --force -s "$CODESIGN_DEVELOPER" "$APP/Contents/MacOS/libmikmod.dylib"
-		codesign --deep --force -s "$CODESIGN_DEVELOPER" "$APP/Contents/MacOS/libmad.dylib"
-		codesign --deep --force -s "$CODESIGN_DEVELOPER" "$APP/Contents/MacOS/libFLAC.dylib"
-		codesign --deep --force -s "$CODESIGN_DEVELOPER" "$APP/Contents/MacOS/QuakeSpasm"
-		codesign --force -s "$CODESIGN_DEVELOPER" "$APP"
-	fi
+	cp "$CODEDIR/sources/icon-q1.icns" "$APP/Contents/Resources/QuakeSpasm.icns"
+
+	
+	chmod +x "$APP/Contents/MacOS/quake_start.sh"
+	chmod +x "$APP"
+#	
+#	if [ "$DO_CODESIGN" = true ] ; then
+#		codesign --deep --force -s "$CODESIGN_DEVELOPER" "$APP/Contents/Frameworks/SDL.framework/Versions/Current"
+#		codesign --deep --force -s "$CODESIGN_DEVELOPER" "$APP/Contents/MacOS/libvorbisfile.dylib"
+#		codesign --deep --force -s "$CODESIGN_DEVELOPER" "$APP/Contents/MacOS/libvorbis.dylib"
+#		codesign --deep --force -s "$CODESIGN_DEVELOPER" "$APP/Contents/MacOS/libopusfile.dylib"
+#		codesign --deep --force -s "$CODESIGN_DEVELOPER" "$APP/Contents/MacOS/libopus.dylib"
+#		codesign --deep --force -s "$CODESIGN_DEVELOPER" "$APP/Contents/MacOS/libogg.dylib"
+#		codesign --deep --force -s "$CODESIGN_DEVELOPER" "$APP/Contents/MacOS/libmikmod.dylib"
+#		codesign --deep --force -s "$CODESIGN_DEVELOPER" "$APP/Contents/MacOS/libmad.dylib"
+#		codesign --deep --force -s "$CODESIGN_DEVELOPER" "$APP/Contents/MacOS/libFLAC.dylib"
+#		codesign --deep --force -s "$CODESIGN_DEVELOPER" "$APP/Contents/MacOS/QuakeSpasm"
+#		codesign --force -s "$CODESIGN_DEVELOPER" "$APP"
+#	fi
 	
 	hdiutil create $OUTDIR/Quake-tmp.dmg -ov -volname "Quake" -fs HFS+ -srcfolder "$OUTDIR/quake" 
 	hdiutil convert $OUTDIR/Quake-tmp.dmg -format UDZO -o "$OUTDIR/Quake.dmg"
@@ -129,7 +157,7 @@ if [ "$BUILD_QUAKE2" = true ] ; then
 		echo "Detaching Vulkan SDK..."
 		hdiutil detach "/Volumes/VulkanSDK"
 		
-		export VULKAN_SDK="$PWD"/vulkansdk
+		export VULKAN_SDK="$PWD"/vulkansdk/macOS
 		export VK_ICD_FILENAMES="$VULKAN_SDK"/macOS/share/vulkan/icd.d/MoltenVK_icd.json
 		export VK_LAYER_PATH="$VULKAN_SDK"/macOS/share/vulkan/explicit_layer.d
 	fi
@@ -145,20 +173,24 @@ if [ "$BUILD_QUAKE2" = true ] ; then
 	echo "Creating Quake II.app"
 	mkdir -p "$APP"/Contents/{MacOS/vulkansdk/macOS/{lib,share/vulkan},Resources}
 	cp "$CODEDIR/sources/Quake2Info.plist" "$APP/Contents/Info.plist"
-	cp "$CODEDIR/sources/Quake2Icon.icns" "$APP/Contents/Resources/AppIcon.icns"
+	cp "$CODEDIR/sources/icon-q2.icns" "$APP/Contents/Resources/AppIcon.icns"
 	cp "$CODEDIR/sources/quake2_start.sh" "$APP/Contents/MacOS/quake2_start.sh"
 	cp "quake2" "ref_vk.dylib" "baseq2/game.dylib" "$APP/Contents/MacOS"
-	cp "$VULKAN_SDK/LICENSE.txt" "$APP/Contents/MacOS/vulkansdk/LICENSE.txt"
-	cp "$VULKAN_SDK/macOS/lib/libMoltenVK.dylib" "$APP/Contents/MacOS/vulkansdk/macOS/lib/libMoltenVK.dylib"
-	cp "$VULKAN_SDK/macOS/lib/libVkLayer_khronos_validation.dylib" "$APP/Contents/MacOS/vulkansdk/macOS/lib/libVkLayer_khronos_validation.dylib"
-	cp "$VULKAN_SDK/macOS/lib/libVkLayer_api_dump.dylib" "$APP/Contents/MacOS/vulkansdk/macOS/lib/libVkLayer_api_dump.dylib"
-	cp -r "$VULKAN_SDK/macOS/share/vulkan/explicit_layer.d" "$APP/Contents/MacOS/vulkansdk/macOS/share/vulkan/explicit_layer.d"
-	cp -r "$VULKAN_SDK/macOS/share/vulkan/icd.d" "$APP/Contents/MacOS/vulkansdk/macOS/share/vulkan/icd.d"
+	cp "$VULKAN_SDK/lib/libMoltenVK.dylib" "$APP/Contents/MacOS/vulkansdk/macOS/lib/libMoltenVK.dylib"
+	cp "$VULKAN_SDK/lib/libVkLayer_khronos_validation.dylib" "$APP/Contents/MacOS/vulkansdk/macOS/lib/libVkLayer_khronos_validation.dylib"
+	cp "$VULKAN_SDK/lib/libVkLayer_api_dump.dylib" "$APP/Contents/MacOS/vulkansdk/macOS/lib/libVkLayer_api_dump.dylib"
+	cp -r "$VULKAN_SDK/share/vulkan/explicit_layer.d" "$APP/Contents/MacOS/vulkansdk/macOS/share/vulkan/explicit_layer"
+	cp -r "$VULKAN_SDK/share/vulkan/icd.d" "$APP/Contents/MacOS/vulkansdk/macOS/share/vulkan/icd"
 	chmod +x "$APP"
 	chmod +x "$APP/Contents/MacOS/quake2"
 	chmod +x "$APP/Contents/MacOS/quake2_start.sh"
 	
 	if [  "$DO_CODESIGN" = true ] ; then
+			
+		xattr -cr "$APP"
+#		codesign --deep -f -s "$CODESIGN_DEVELOPER" "$APP/Contents/MacOS/game.dylib"
+#		codesign --deep -f -s "$CODESIGN_DEVELOPER" "$APP/Contents/MacOS/quake2"
+#		codesign --deep -f -s "$CODESIGN_DEVELOPER" "$APP/Contents/MacOS/ref_vk.dylib"
 		codesign --force --deep -s "$CODESIGN_DEVELOPER" "$APP"
 	fi
 	
@@ -179,8 +211,18 @@ if [ "$BUILD_QUAKE3" = true ] ; then
 	echo "Moving app..."
 	cp -r build/release-darwin-x86_64/ioquake3.app "$APP"
 	
+	cp "$CODEDIR/sources/icon-q3.icns" "$APP/Contents/Resources/quake3_flat.icns"
+
+	
 	if [  "$DO_CODESIGN" = true ] ; then
-		codesign --force -s "$CODESIGN_DEVELOPER" "$APP"
+		xattr -cr "$APP"
+
+		codesign --deep -f -s "$CODESIGN_DEVELOPER" "$APP/Contents/MacOS/ioquake3"
+		codesign --deep -f -s "$CODESIGN_DEVELOPER" "$APP/Contents/MacOS/ioq3ded"
+		codesign --deep -f -s "$CODESIGN_DEVELOPER" "$APP/Contents/MacOS/"*.dylib
+		codesign --deep -f -s "$CODESIGN_DEVELOPER" "$APP/Contents/MacOS/missionpack/"*.dylib
+
+		codesign --force --deep -s "$CODESIGN_DEVELOPER" "$APP"
 	fi
 	
 	hdiutil create $OUTDIR/Quake3-tmp.dmg -ov -volname "QuakeIIIArena" -fs HFS+ -srcfolder "$OUTDIR/quake3" 

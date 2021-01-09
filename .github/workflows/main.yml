@@ -36,7 +36,8 @@ jobs:
         env:
           P12_BASE64: ${{ secrets.CERTIFICATES_P12 }}
           P12_PASSWORD: ${{ secrets.CERTIFICATES_P12_PASSWORD }}
-          DO_CODESIGN: false
+          DO_CODESIGN: true
+          IMPORT_CERT: true
           
       - name: Create Release
         id: create_release
