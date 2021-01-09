@@ -206,7 +206,7 @@ if [ "$BUILD_QUAKE3" = true ] ; then
 	build_prep "Quake III Arena" ioq3 https://github.com/ioquake/ioq3 quake3
 	
 	echo "Compiling..."
-	./make-macosx-app.sh release x86_64
+	make release
 	
 	echo "Moving app..."
 	cp -r build/release-darwin-x86_64/ioquake3.app "$APP"
