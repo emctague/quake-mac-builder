@@ -157,7 +157,7 @@ if [ "$BUILD_QUAKE2" = true ] ; then
 		echo "Detaching Vulkan SDK..."
 		hdiutil detach "/Volumes/VulkanSDK"
 		
-		export VULKAN_SDK="$PWD"/vulkansdk/macOS
+		export VULKAN_SDK="$PWD"/vulkansdk
 		export VK_ICD_FILENAMES="$VULKAN_SDK"/macOS/share/vulkan/icd.d/MoltenVK_icd.json
 		export VK_LAYER_PATH="$VULKAN_SDK"/macOS/share/vulkan/explicit_layer.d
 	fi
@@ -215,6 +215,7 @@ if [ "$BUILD_QUAKE3" = true ] ; then
 
 	
 	if [  "$DO_CODESIGN" = true ] ; then
+
 		xattr -cr "$APP"
 
 		codesign --deep -f -s "$CODESIGN_DEVELOPER" "$APP/Contents/MacOS/ioquake3"
