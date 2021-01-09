@@ -206,10 +206,13 @@ if [ "$BUILD_QUAKE3" = true ] ; then
 	build_prep "Quake III Arena" ioq3 https://github.com/ioquake/ioq3 quake3
 	
 	echo "Compiling..."
-	make release
+	./make-macosx.sh x86_64
 	
 	echo "Moving app..."
 	cp -r build/release-darwin-x86_64/ioquake3.app "$APP"
+	
+	plutil -remove CFBundleSignature "$APP/Contents/Info.plist"
+	plutil -remove LSMinimumSystemVersion "$APP/Contents/Info.plist"
 	
 	cp "$CODEDIR/sources/icon-q3.icns" "$APP/Contents/Resources/quake3_flat.icns"
 
