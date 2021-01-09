@@ -107,7 +107,7 @@ if [ "$BUILD_QUAKE1" = true ] ; then
 	fi
 	
 	hdiutil create $OUTDIR/Quake-tmp.dmg -ov -volname "Quake" -fs HFS+ -srcfolder "$OUTDIR/quake" 
-	hdiutil convert $OUTDIR/Quake-tmp.dmg -format UDZO -o $OUTDIR/Quake.dmg
+	hdiutil convert $OUTDIR/Quake-tmp.dmg -format UDZO -o "$OUTDIR/Quake.dmg"
 	rm -rf $OUTDIR/Quake-tmp.dmg
 	
 	echo "Done building Quake I!"

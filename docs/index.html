@@ -19,7 +19,7 @@
 						<div class="app-name">Quake</div>
 						<div class="app-meta">Id Software, 1996</div>
 					</div>
-					<a href="https://github.com/emctague/quake-mac-builder/releases/download/2021-01-07-2/Quake.I.zip"><img src="download.png" class="dl-icon"/></a>
+					<a href="https://github.com/emctague/quake-mac-builder/releases/latest/download/Quake.dmg"><img src="download.png" class="dl-icon"/></a>
 				</div>
 				<div class="table-row">
 					<div class="table-header">Built From</div>
@@ -27,7 +27,7 @@
 				</div>
 				<div class="table-row">
 					<div class="table-header">Last Updated</div>
-					<div class="table-value"><a href="https://github.com/emctague/quake-mac-builder/releases/tag/2021-01-07-2">January 7, 2021</a></div>
+					<div class="table-value"><a href="https://github.com/emctague/quake-mac-builder/releases/latest" class="latest-release-date">...</a></div>
 				</div>
 				<div class="table-row">
 					<div class="table-header">Built From</div>
@@ -41,7 +41,7 @@
 						<div class="app-name">Quake II</div>
 						<div class="app-meta">Id Software, 1997</div>
 					</div>
-					<a href="https://github.com/emctague/quake-mac-builder/releases/download/2021-01-07-2/Quake.II.zip"><img src="download.png" class="dl-icon"/></a>
+					<a href="https://github.com/emctague/quake-mac-builder/releases/latest/download/QuakeII.dmg"><img src="download.png" class="dl-icon"/></a>
 				</div>
 				<div class="table-row">
 					<div class="table-header">Built From</div>
@@ -49,7 +49,7 @@
 				</div>
 				<div class="table-row">
 					<div class="table-header">Last Updated</div>
-					<div class="table-value"><a href="https://github.com/emctague/quake-mac-builder/releases/tag/2021-01-07-2">January 7, 2021</a></div>
+					<div class="table-value"><a href="https://github.com/emctague/quake-mac-builder/releases/latest" class="latest-release-date">...</a></div>
 				</div>
 				<div class="table-row">
 					<div class="table-header">Built From</div>
@@ -63,7 +63,7 @@
 						<div class="app-name">Quake III Arena</div>
 						<div class="app-meta">Id Software, 1999</div>
 					</div>
-					<a href="https://github.com/emctague/quake-mac-builder/releases/download/2021-01-07-2/Quake.III.Arena.zip"><img src="download.png" class="dl-icon"/></a>
+					<a href="https://github.com/emctague/quake-mac-builder/releases/latest/download/QuakeIIIArena.dmg"><img src="download.png" class="dl-icon"/></a>
 				</div>
 				<div class="table-row">
 					<div class="table-header">Built From</div>
@@ -71,7 +71,7 @@
 				</div>
 				<div class="table-row">
 					<div class="table-header">Last Updated</div>
-					<div class="table-value"><a href="https://github.com/emctague/quake-mac-builder/releases/tag/2021-01-07-2">January 7, 2021</a></div>
+					<div class="table-value"><a href="https://github.com/emctague/quake-mac-builder/releases/latest" class="latest-release-date">...</a></div>
 				</div>
 				<div class="table-row">
 					<div class="table-header">Built From</div>
@@ -127,5 +127,24 @@
 			
 			<p class="copyright">Copyright 2021 Ethan McTague</p>
 		</footer>
+		
+		<script>
+			const targets = document.querySelectorAll(".latest-release-date");
+			
+			fetch("https://api.github.com/repos/emctague/quake-mac-builder/releases/latest")
+				.then(response => response.json())
+				.then(data => {
+					
+					const d = new Date(Date.parse(data.created_at));
+					const year = new Intl.DateTimeFormat('en', { year: 'numeric' }).format(d);
+					const month = new Intl.DateTimeFormat('en', { month: 'long' }).format(d);
+					const day = new Intl.DateTimeFormat('en', { day: '2-digit' }).format(d);
+					
+					
+					[].forEach.call(targets, item => {
+						item.innerText = `${month} ${day}, ${year}`;
+					});
+				});
+		</script>
 	</body>
 </html>
