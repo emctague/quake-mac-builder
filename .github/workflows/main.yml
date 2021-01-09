@@ -36,7 +36,7 @@ jobs:
         env:
           P12_BASE64: ${{ secrets.CERTIFICATES_P12 }}
           P12_PASSWORD: ${{ secrets.CERTIFICATES_P12_PASSWORD }}
-          DO_CODESIGN: true
+          DO_CODESIGN: false
       
       - uses: actions/upload-artifact@v2
         with:
