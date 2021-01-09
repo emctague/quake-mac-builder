@@ -206,7 +206,7 @@ if [ "$BUILD_QUAKE3" = true ] ; then
 	build_prep "Quake III Arena" ioq3 https://github.com/ioquake/ioq3 quake3
 	
 	echo "Compiling..."
-	./make-macosx.sh x86_64
+	./make-macosx-app.sh release x86_64
 	
 	echo "Moving app..."
 	cp -r build/release-darwin-x86_64/ioquake3.app "$APP"
@@ -215,13 +215,14 @@ if [ "$BUILD_QUAKE3" = true ] ; then
 
 	
 	if [  "$DO_CODESIGN" = true ] ; then
-
 		xattr -cr "$APP"
 
 		codesign --deep -f -s "$CODESIGN_DEVELOPER" "$APP/Contents/MacOS/ioquake3"
 		codesign --deep -f -s "$CODESIGN_DEVELOPER" "$APP/Contents/MacOS/ioq3ded"
 		codesign --deep -f -s "$CODESIGN_DEVELOPER" "$APP/Contents/MacOS/"*.dylib
 		codesign --deep -f -s "$CODESIGN_DEVELOPER" "$APP/Contents/MacOS/missionpack/"*.dylib
+		codesign --deep -f -s "$CODESIGN_DEVELOPER" "$APP/Contents/MacOS/baseq3/"*.dylib
+
 
 		codesign --force --deep -s "$CODESIGN_DEVELOPER" "$APP"
 	fi
