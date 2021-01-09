@@ -57,8 +57,9 @@ article.panel {
 	flex: 1;
 }
 
-.icon-col .app-name {
+.icon-col h3 {
 	font-size: 1.3em;
+	margin-top: 0;
 	margin-bottom: .25em;
 	font-weight: 500;
 }
