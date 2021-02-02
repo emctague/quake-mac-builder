@@ -3,8 +3,8 @@
 # This is for embedding within the .app, not for your use.
 
 CORE="$( cd "$(dirname "$0")" >/dev/null 2>&1 ; pwd -P )"
-mkdir -p "$HOME/Library/ApplicationSupport/Quake/id1"
-cd "$HOME/Library/ApplicationSupport/Quake"
+mkdir -p "$HOME/Library/Application Support/Quake/id1"
+cd "$HOME/Library/Application Support/Quake"
 
 
 if [ ! -f "id1/PAK0.PAK" ]; then
